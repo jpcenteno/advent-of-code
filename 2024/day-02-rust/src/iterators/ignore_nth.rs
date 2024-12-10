@@ -1,23 +1,29 @@
 use std::iter::Enumerate;
 
-pub trait IgnoreNth: Iterator {
-    fn ignore_nth(self, n: usize) -> IgnoreNthIterator<Self>
-    where 
+/// This trait extends the `Iterator` trait with the method `ignore_nth` that returns a wrapped
+/// `Iterator` with type `IgnoreNth` which will skip the `n`-th element of it's input. 
+pub trait IgnoreNthTrait: Iterator {
+    // Creates an iterator that skips the `n`-th element.
+    fn ignore_nth(self, n: usize) -> IgnoreNth<Self>
+    where
         Self: Sized,
     {
         let iter = self.enumerate();
-        IgnoreNthIterator { iter, n }
+        IgnoreNth { iter, n }
     }
 }
 
-impl<I> IgnoreNth for I where I: Iterator {}
+impl<I> IgnoreNthTrait for I where I: Iterator {}
 
-pub struct IgnoreNthIterator<I: Iterator> {
+/// An iterator that skips the `n`-th element of `iter`.
+///
+/// This struct is created by the `ignore_nth` method of `IgnoreNthTrait`.
+pub struct IgnoreNth<I: Iterator> {
     iter: Enumerate<I>,
     n: usize
 }
 
-impl<I> Iterator for IgnoreNthIterator<I>
+impl<I> Iterator for IgnoreNth<I>
 where
     I: Iterator,
 {
