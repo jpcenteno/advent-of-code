@@ -30,8 +30,6 @@ struct Report(Vec<i64>);
 
 impl Report {
     fn is_safe(&self) -> bool {
-        println!("input: {:?}", self.0);
-
         self
             .0
             .iter()
