@@ -1,39 +1,49 @@
+mod iterators;
+
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::str::FromStr;
 
-struct Report(Vec<i64>);
+use crate::iterators::window_two::WindowTwo;
 
-#[derive(Debug)]
-struct ParseReportError;
+fn sign(x: i64) -> i64 {
+    if 0 < x {
+        1
+    } else if x < 0 {
+        -1
+    } else {
+        0
+    }
+}
+
+fn same_sign(a: i64, b: i64) -> bool {
+    sign(a) == sign(b)
+}
+
+fn in_safe_range(delta: i64) -> bool {
+    let delta = delta.abs();
+    1 <= delta && delta <= 3
+}
+
+struct Report(Vec<i64>);
 
 impl Report {
     fn is_safe(&self) -> bool {
-        let is_increasing = self.0[0] < self.0[1];
-        let mut it = self.0.iter();
-        let mut prev = it.next().unwrap();
+        println!("input: {:?}", self.0);
 
-
-        for current in it {
-            let delta = (current - prev).abs();
-
-            if delta < 1 || 3 < delta {
-                return false;
-            }
-
-            if is_increasing && current < prev {
-                return false;
-            } else if (! is_increasing) && prev < current {
-                return false
-            }
-
-            prev = current;
-        }
-
-        true
+        self
+            .0
+            .iter()
+            .window_two()
+            .map(|t| t.1 - t.0)
+            .window_two()
+            .all(|(prev, curr)| same_sign(prev, curr) && in_safe_range(curr))
     }
 }
+
+#[derive(Debug)]
+struct ParseReportError;
 
 impl FromStr for Report {
     type Err = ParseReportError;
