@@ -1,17 +1,10 @@
 mod instructions;
 mod parser;
+mod implementations;
 
-use self::instructions::Instruction;
+use self::implementations::interpreter_implementation_trait::InterpreterImplementation;
 
-/// Methods that define the behavior of an `Interpreter`.
-///
-/// This Trait was intentionally defined as private to prevent `Interpreter` implementations
-/// outside of the boundaries of this module.
-trait InterpreterImplementation {
-    fn handle_instruction(&mut self, instruction: &Instruction);
-
-    fn accumulator(&self) -> u64;
-}
+pub use self::implementations::simple_interpreter::SimpleInterpreter;
 
 #[allow(private_bounds)]
 pub trait Interpreter: Default + InterpreterImplementation {
@@ -28,31 +21,6 @@ pub trait Interpreter: Default + InterpreterImplementation {
 }
 
 impl<T> Interpreter for T where T: InterpreterImplementation + Default {}
-
-/// This interpreter computes the solution for the first part of the problem. It will process all
-/// the `mul` instructions while ignoring the `do()` and `don't()` instructions.
-pub struct SimpleInterpreter {
-    accumulator: u64
-}
-
-impl Default for SimpleInterpreter {
-    fn default() -> Self {
-        Self { accumulator: 0 }
-    }
-}
-
-impl InterpreterImplementation for SimpleInterpreter {
-    fn handle_instruction(&mut self, instruction: &Instruction) {
-        match instruction {
-            &Instruction::Mul(x, y) => { self.accumulator += x * y; }
-            _ => (),
-        }
-    }
-
-    fn accumulator(&self) -> u64 {
-        self.accumulator
-    }
-}
 
 #[cfg(test)]
 mod test {
