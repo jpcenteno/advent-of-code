@@ -3,32 +3,45 @@ mod parser;
 
 use self::instructions::Instruction;
 
-pub struct SimpleInterpreter {
-    accumulator: u64
-}
-
-impl SimpleInterpreter {
-    pub fn eval(src: &str) -> u64 {
+pub trait Interpreter: Default {
+    fn eval(src: &str) -> u64 {
         let mut state = Self::default();
 
         parser::parse(src)
             .iter()
             .for_each(|instr| state.handle_instruction(instr));
 
-        state.accumulator
+        state.accumulator()
     }
 
+    fn handle_instruction(&mut self, instruction: &Instruction);
+
+    fn accumulator(&self) -> u64;
+}
+
+pub struct SimpleInterpreter {
+    accumulator: u64
+}
+
+impl SimpleInterpreter {
+}
+
+impl Default for SimpleInterpreter {
+    fn default() -> Self {
+        Self { accumulator: 0 }
+    }
+}
+
+impl Interpreter for SimpleInterpreter {
     fn handle_instruction(&mut self, instruction: &Instruction) {
         match instruction {
             &Instruction::Mul(x, y) => { self.accumulator += x * y; }
             _ => (),
         }
     }
-}
 
-impl Default for SimpleInterpreter {
-    fn default() -> Self {
-        Self { accumulator: 0 }
+    fn accumulator(&self) -> u64 {
+        self.accumulator
     }
 }
 

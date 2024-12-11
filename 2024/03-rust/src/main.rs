@@ -2,7 +2,7 @@ mod interpreter;
 
 use std::{env, fs};
 
-use interpreter::SimpleInterpreter;
+use interpreter::{Interpreter, SimpleInterpreter};
 
 fn read_input() -> String {
     let file_path: String = env::args().skip(1).next().expect("USAGE: cargo run -- FILE");
