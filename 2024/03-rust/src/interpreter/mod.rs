@@ -3,7 +3,19 @@ mod parser;
 
 use self::instructions::Instruction;
 
-pub trait Interpreter: Default {
+/// Methods that define the behavior of an `Interpreter`.
+///
+/// This Trait was intentionally defined as private to prevent `Interpreter` implementations
+/// outside of the boundaries of this module.
+trait InterpreterImplementation {
+    fn handle_instruction(&mut self, instruction: &Instruction);
+
+    fn accumulator(&self) -> u64;
+}
+
+#[allow(private_bounds)]
+pub trait Interpreter: Default + InterpreterImplementation {
+    /// Interprets a string of source code and returns it's result.
     fn eval(src: &str) -> u64 {
         let mut state = Self::default();
 
@@ -13,11 +25,9 @@ pub trait Interpreter: Default {
 
         state.accumulator()
     }
-
-    fn handle_instruction(&mut self, instruction: &Instruction);
-
-    fn accumulator(&self) -> u64;
 }
+
+impl<T> Interpreter for T where T: InterpreterImplementation + Default {}
 
 pub struct SimpleInterpreter {
     accumulator: u64
@@ -32,7 +42,7 @@ impl Default for SimpleInterpreter {
     }
 }
 
-impl Interpreter for SimpleInterpreter {
+impl InterpreterImplementation for SimpleInterpreter {
     fn handle_instruction(&mut self, instruction: &Instruction) {
         match instruction {
             &Instruction::Mul(x, y) => { self.accumulator += x * y; }
