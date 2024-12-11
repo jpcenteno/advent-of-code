@@ -29,11 +29,10 @@ pub trait Interpreter: Default + InterpreterImplementation {
 
 impl<T> Interpreter for T where T: InterpreterImplementation + Default {}
 
+/// This interpreter computes the solution for the first part of the problem. It will process all
+/// the `mul` instructions while ignoring the `do()` and `don't()` instructions.
 pub struct SimpleInterpreter {
     accumulator: u64
-}
-
-impl SimpleInterpreter {
 }
 
 impl Default for SimpleInterpreter {
